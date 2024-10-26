@@ -8,7 +8,7 @@ use crate::{
     anatomy::Side
 };
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct Output {
     pub flexion: f64,
     pub tibial_varus: f64,

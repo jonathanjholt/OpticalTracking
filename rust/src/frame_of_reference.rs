@@ -188,7 +188,7 @@ fn body_frame(bone_locations: &[Landmark]) -> (Matrix4<f64>, Vector3<f64>) {
         };
         let tempk = match bone_locations[0].bone {
             Bone::Tibia => origin - locations.distal.map(|f| &f.data.probe).map(|f| f.mean_xyz()).unwrap(),
-            Bone::Femur => locations.proximal.map(|f| &f.data.probe).map(|f| f.mean_xyz()).unwrap(),
+            Bone::Femur => locations.proximal.map(|f| &f.data.probe).map(|f| f.mean_xyz()).unwrap() - origin,
             Bone::Patella => todo!(),
         };
 
