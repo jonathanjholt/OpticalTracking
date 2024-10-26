@@ -32,8 +32,8 @@ impl Output {
         let other_vec = other.unit_vectors();
 
         let floating_axis = first.floating_axis(other);
-        let femur_to_tibia_origin = (first.origin().to_homogeneous()
-            - other.origin().to_homogeneous())
+        let femur_to_tibia_origin = (first.origin().vector
+            - other.origin().vector)
         .fixed_view::<3, 1>(0, 0)
         .into_owned();
 
