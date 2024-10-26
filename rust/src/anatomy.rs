@@ -45,7 +45,7 @@ pub struct Landmark <'a> {
 
 #[allow(dead_code)]
 #[derive(Default)]
-pub struct BoneLocations <'a> {
+pub struct RigidBodyLandmarks <'a> {
     pub medial: Option<&'a Landmark<'a>>,
     pub lateral: Option<&'a Landmark<'a>>,
     pub proximal: Option<&'a Landmark<'a>>,

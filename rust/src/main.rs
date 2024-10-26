@@ -13,11 +13,9 @@ use anatomy::{
     Result, Side, Bone, Position, Landmark
 };
 use csv::Writer;
-use nalgebra::Vector4;
 
 
 fn main() -> Result<()> {
-    let no_offset = Vector4::zeros();
     let (folder, side) = get_args();
     // let tests = ["FE1", "FE2"];
     let tests = get_test_files(&folder)?;
@@ -41,6 +39,7 @@ fn main() -> Result<()> {
     // Define bone coordinate systems
     let cs_tibia: CoordinateSystem<Tibia, Global> = coordinate_system_from_landmark::<Tibia>(tibia_landmarks);
     let cs_femur: CoordinateSystem<Femur, Global> = coordinate_system_from_landmark::<Femur>(femur_landmarks);
+
     // let cs_tibia: CoordinateSystem<Tibia, Global> = CoordinateSystem::<Tibia,Global>::from_landmark(tibia_landmarks);
     // let cs_femur = CoordinateSystem::<Femur, Global>::from_landmark(femur_landmarks);
 
@@ -49,8 +48,8 @@ fn main() -> Result<()> {
     let cs_pin2 = CoordinateSystem::<Pin2, Global>::tracker::<Pin2>(femur_landmarks[0].pin2());
 
     // Calculate bone-to-tracker transform
-    let tibia_in_pin1 = cs_tibia.change_frame(&cs_pin1.inverse(), &no_offset);
-    let femur_in_pin2 = cs_femur.change_frame(&cs_pin2.inverse(), &no_offset);
+    let tibia_in_pin1 = cs_tibia.change_frame(&cs_pin1.inverse()[0]);
+    let femur_in_pin2 = cs_femur.change_frame(&cs_pin2.inverse()[0]);
     
     // let mut tf_angles: Vec<Vector3<f64>> = vec![];
     // let mut tf_translations: Vec<Vector3<f64>> = vec![];
@@ -70,8 +69,8 @@ fn main() -> Result<()> {
 
         //Calculate dynamic bone positions
         for (i, _) in global_ti_pin1.iter().enumerate() {
-            let tibia_in_global = tibia_in_pin1.transform(&global_ti_pin1[i], &no_offset);
-            let femur_in_global = femur_in_pin2.transform(&global_ti_pin2[i], &no_offset);
+            let tibia_in_global = tibia_in_pin1.transform(&global_ti_pin1[i]);
+            let femur_in_global = femur_in_pin2.transform(&global_ti_pin2[i]);
 
             // Serialise the output for the csv
                 let record = Output::new(&tibia_in_global, &femur_in_global, &side);
@@ -82,6 +81,7 @@ fn main() -> Result<()> {
         }
         wtr.flush()?;
     }
+    println!("Done flushing all data");
 
     Ok(())
 }
