@@ -11,11 +11,11 @@ use crate::{
 #[derive(Serialize, Clone, Debug)]
 pub struct Output {
     pub flexion: f64,
-    pub tibial_varus: f64,
-    pub tibial_external_rotation: f64,
-    pub lateral_medial: f64,
-    pub anterior_posterior: f64,
-    pub distal_proximal: f64,
+    pub varus: f64,
+    pub external_rotation: f64,
+    pub lateral: f64,
+    pub anterior: f64,
+    pub distal: f64,
 }
 impl Output {
     pub fn new<O:Reference, N: Reference, G: Reference>(first: &CoordinateSystem<O, G>, other: &CoordinateSystem<N, G>, side: &Side) -> Output {
@@ -45,11 +45,11 @@ impl Output {
         let tf_transl = Vector3::new(lat_med, ant_post, dist_prox);
         Output {
             flexion: tf_ang.x.to_degrees(),
-            tibial_varus: tf_ang.y.to_degrees(),
-            tibial_external_rotation: tf_ang.z.to_degrees(),
-            lateral_medial: tf_transl.x,
-            anterior_posterior: tf_transl.y,
-            distal_proximal: tf_transl.z
+            varus: tf_ang.y.to_degrees(),
+            external_rotation: tf_ang.z.to_degrees(),
+            lateral: tf_transl.x,
+            anterior: tf_transl.y,
+            distal: tf_transl.z
         }
     }
 }
