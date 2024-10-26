@@ -39,7 +39,7 @@ pub struct Landmark <'a> {
     pub position: &'a [Position],
     pub side: &'a Side,
     pub bone: Bone,
-    pub data: Structure,
+    pub data: Trackers,
     pub header: Header,
 }
 
@@ -116,10 +116,10 @@ impl <'a> LandmarkSetup <'a>{
 }
 
 impl <'a> Landmark<'a> {
-    pub fn pin1(&self) -> &Coords {
+    pub fn pin1(&self) -> &Record {
         &self.data.pin1
     }
-    pub fn pin2(&self) -> &Coords {
+    pub fn pin2(&self) -> &Record {
         &self.data.pin2
     }
     pub fn new(folder: &'a str, tests: &'a[ffi::OsString], side: &'a Side) -> LandmarkSetup<'a> {

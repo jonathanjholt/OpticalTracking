@@ -1,12 +1,10 @@
 use std::marker::PhantomData;
 
-use crate::{anatomy::RigidBodyLandmarks, parse_csv::Coords};
+use crate::{anatomy::RigidBodyLandmarks, parse_csv::Record};
 
 use super::anatomy::{Bone, Landmark, Position, Side};
 use itertools::izip;
-use nalgebra::{
-    self as na, Isometry3, Matrix3, Matrix4, Rotation3, Translation3, Vector3,
-};
+use nalgebra::{self as na, Isometry3, Matrix3, Matrix4, Rotation3, Translation3, Vector3};
 // use super::change_frame::ChangeFrame;
 
 pub trait Reference: Sized {}
@@ -87,10 +85,7 @@ where
             in_reference_to: PhantomData,
         }
     }
-    pub fn change_frame<N>(
-        &self,
-        matrix: &CoordinateSystem<G, N>,
-    ) -> CoordinateSystem<O, N>
+    pub fn change_frame<N>(&self, matrix: &CoordinateSystem<G, N>) -> CoordinateSystem<O, N>
     where
         N: Reference,
     {
@@ -99,9 +94,9 @@ where
     pub fn origin(&self) -> &Translation3<f64> {
         &self.transform.translation
     }
-    pub fn tracker<N: Reference>(coords: &Coords) -> Vec<CoordinateSystem<N, G>> {
+    pub fn tracker<N: Reference>(coords: &Record) -> Vec<CoordinateSystem<N, G>> {
         izip!(&coords.q0, &coords.qx, &coords.qy, &coords.qz)
-            .map(Coords::rotation)
+            .map(Record::rotation)
             .map(Matrix3::from)
             .enumerate()
             .map(|(i, rotation)| {
@@ -131,7 +126,7 @@ where
     //     }
     // }
     pub fn rotation(&self, side: &Side) -> Vector3<f64> {
-        let ang  = self.transform.rotation.euler_angles();
+        let ang = self.transform.rotation.euler_angles();
         match side {
             Side::Left => Vector3::new(-ang.0, -ang.1, -ang.2),
             Side::Right => Vector3::new(-ang.0, ang.1, ang.2),

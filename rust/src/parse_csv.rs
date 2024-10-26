@@ -49,15 +49,15 @@ pub struct DatumCoords {
 }
 
 #[derive(Debug)]
-pub struct Structure {
-    pub probe: Coords,
-    pub pin1: Coords,
-    pub pin2: Coords,
+pub struct Trackers {
+    pub probe: Record,
+    pub pin1: Record,
+    pub pin2: Record,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Default)]
-pub struct Coords {
+pub struct Record {
     pub q0: Vec<f64>,
     pub qx: Vec<f64>,
     pub qy: Vec<f64>,
@@ -86,7 +86,7 @@ pub enum Units {
 
 pub struct Csv {
     pub header: Header,
-    pub content: Structure,
+    pub content: Trackers,
 }
 
 #[allow(dead_code)]
@@ -130,24 +130,24 @@ impl Csv {
         for result in rdr.deserialize() {
             content.push(result?);
         }
-        let content: Structure = Self::convert_to_structure(content);
+        let content: Trackers = Self::convert_to_structure(content);
 
         Ok(Csv { header, content })
     }
 
-    fn convert_to_structure(vec_datum: Vec<Datum>) -> Structure {
+    fn convert_to_structure(vec_datum: Vec<Datum>) -> Trackers {
         let temp = vec_datum.iter();
-        let probe = Coords::new(&temp, |f| f.probe);
-        let pin1 = Coords::new(&temp, |f| f.pin1);
-        let pin2 = Coords::new(&temp, |f| f.pin2);
+        let probe = Record::new(&temp, |f| f.probe);
+        let pin1 = Record::new(&temp, |f| f.pin1);
+        let pin2 = Record::new(&temp, |f| f.pin2);
 
-        Structure { probe, pin1, pin2 }
+        Trackers { probe, pin1, pin2 }
     }
 }
 
 // #[allow(dead_code)]
-impl Coords {
-    pub fn new<F>(data: &slice::Iter<Datum>, structure: F) -> Coords
+impl Record {
+    pub fn new<F>(data: &slice::Iter<Datum>, structure: F) -> Record
         where
             F: Fn(&Datum) -> Option<DatumCoords>,
     {
@@ -156,7 +156,7 @@ impl Coords {
            .filter_map(structure)
            .map(|f| (f.q0.unwrap_or(0.0), f.qx.unwrap_or(0.0), f.qy.unwrap_or(0.0), f.qz.unwrap_or(0.0), f.x.unwrap_or(0.0), f.y.unwrap_or(0.0), f.z.unwrap_or(0.0), f.error.unwrap_or(0.0)))
            .multiunzip();
-        Coords { q0, qx, qy, qz, x, y, z, error}
+        Record { q0, qx, qy, qz, x, y, z, error}
     }
     // pub fn mean(&self) -> Coords {
     //     Coords {

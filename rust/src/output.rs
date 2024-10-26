@@ -1,6 +1,5 @@
 use std::f64::consts::PI;
 
-use nalgebra::Vector3;
 use serde::Serialize;
 
 use crate::{
@@ -32,12 +31,9 @@ impl Output {
         let other_vec = other.unit_vectors();
 
         let floating_axis = first.floating_axis(other);
-        let femur_to_tibia_origin = (first.origin().vector
-            - other.origin().vector)
-        .fixed_view::<3, 1>(0, 0)
-        .into_owned();
+        let femur_to_tibia_origin = first.origin().vector - other.origin().vector;
 
-        let (varus, external_rotation, lat_med) = {
+        let (varus, external_rotation, lateral_medial) = {
             let beta = other_vec.x.dot(&self_vecs.z).acos();
             match side {
                 Side::Right => (
@@ -52,19 +48,15 @@ impl Output {
                 ),
             }
         };
-        let ant_post = femur_to_tibia_origin.dot(&floating_axis);
-        let dist_prox = -femur_to_tibia_origin.dot(&self_vecs.z);
-        let tf_ang = Vector3::new(rotation.x, varus, external_rotation);
-        let tf_transl = Vector3::new(lat_med, ant_post, dist_prox);
-        let output = Output {
-            flexion: tf_ang.x.to_degrees(),
-            tibial_varus: tf_ang.y.to_degrees(),
-            tibial_external_rotation: tf_ang.z.to_degrees(),
-            lateral_medial: tf_transl.x,
-            anterior_posterior: tf_transl.y,
-            distal_proximal: tf_transl.z,
-        };
-        println!("{:#?}", output);
-        output
+        let anterior_posterior = femur_to_tibia_origin.dot(&floating_axis);
+        let distal_proximal = -femur_to_tibia_origin.dot(&self_vecs.z);
+        Output {
+            flexion: rotation.x.to_degrees(),
+            tibial_varus: varus.to_degrees(),
+            tibial_external_rotation: external_rotation.to_degrees(),
+            lateral_medial,
+            anterior_posterior,
+            distal_proximal,
+        }
     }
 }
